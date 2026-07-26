@@ -1,48 +1,51 @@
 ﻿pipeline {
-  agent any
-  environment {
-    REGISTRY = 'lanka-microjob'
-  }
-  stages {
-    stage('Build Services') {
-      steps {
-        sh '''
-          for d in user-service job-service matching-service broker-service notification-service api-gateway; do
-            echo "Building $d..."
-            (cd $d && mvn -q -DskipTests package)
-          done
-        '''
-      }
-    }
-    stage('Build Frontend') {
-      steps {
-        sh 'cd frontend && npm ci && npm run build'
-      }
-    }
-    stage('Docker Build') {
-      steps {
-        script {
-          ['user-service','job-service','matching-service',
-           'broker-service','notification-service','api-gateway','frontend'].each { svc ->
-            sh "docker build -t ${REGISTRY}/${svc}:latest ./${svc}"
-          }
+
+    agent any
+
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/matheehesh/SOC-testing.git'
+            }
         }
-      }
+
+
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t matheehesh02/microjobs .'
+            }
+        }
+
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'matheesha', variable: 'DOCKER_PASSWORD')
+                ]) {
+                    bat 'docker login -u matheehesh02 -p %DOCKER_PASSWORD%'
+                }
+            }
+        }
+
+
+        stage('Push Docker Image') {
+            steps {
+                bat 'docker push matheehesh02/microjobs'
+            }
+        }
+
     }
-    stage('Validate Compose') {
-      steps {
-        sh 'docker compose config'
-      }
+
+
+    post {
+
+        always {
+            bat 'docker logout'
+        }
+
     }
-    stage('Deploy to Kubernetes') {
-      when { branch 'main' }
-      steps {
-        sh 'kubectl apply -f k8s/'
-      }
-    }
-  }
-  post {
-    success { echo 'Lanka MicroJob pipeline succeeded' }
-    failure { echo 'Pipeline failed - check logs above' }
-  }
+
+
 }
