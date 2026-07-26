@@ -1,0 +1,3222 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+    <title>Lanka MicroJob</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+          rel="stylesheet"/>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #080c14;
+            --surface: #0f1520;
+            --surface2: #151d2e;
+            --border: #1e2a42;
+            --border2: #2a3a58;
+            --text: #e8edf8;
+            --muted: #6b7a9a;
+            --dim: #3a4a68;
+            --blue: #3b8ef0;
+            --teal: #1dc99a;
+            --amber: #f5a623;
+            --purple: #8b6ef5;
+            --coral: #f06060;
+            --green: #4caf7d;
+            --blue-bg: #0a1e3a;
+            --teal-bg: #062018;
+            --amber-bg: #221500;
+            --purple-bg: #130d30;
+            --coral-bg: #2a0a0a;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(8, 12, 20, .97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            gap: 8px
+        }
+
+        .nav-brand {
+            font-size: 17px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--blue), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 2px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none
+        }
+
+        .nav-tabs::-webkit-scrollbar {
+            display: none
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-family: 'Syne', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 9px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: .2s;
+            white-space: nowrap
+        }
+
+        .nav-tab:hover {
+            color: var(--text);
+            background: var(--surface2)
+        }
+
+        .nav-tab.active {
+            color: var(--teal);
+            background: var(--teal-bg)
+        }
+
+        .nav-tab.broker-tab.active {
+            color: var(--amber);
+            background: var(--amber-bg)
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 6px;
+            border: none;
+            background: none;
+            flex-shrink: 0
+        }
+
+        .hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: .3s
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg)
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg)
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            background: rgba(8, 12, 20, .99);
+            border-bottom: 1px solid var(--border);
+            z-index: 99;
+            padding: 12px;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .mobile-menu.open {
+            display: flex
+        }
+
+        .mobile-menu .nav-tab {
+            text-align: left;
+            font-size: 13px;
+            padding: 10px 14px
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding-top: 56px
+        }
+
+        .page.active {
+            display: block
+        }
+
+        /* HERO */
+        .hero {
+            min-height: calc(100vh - 56px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(59, 142, 240, .07) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(29, 201, 154, .05) 0%, transparent 60%);
+            pointer-events: none
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--teal-bg);
+            border: 1px solid rgba(29, 201, 154, .3);
+            border-radius: 20px;
+            padding: 5px 13px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--teal);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            margin-bottom: 22px
+        }
+
+        .hero h1 {
+            font-size: clamp(26px, 6vw, 60px);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 14px;
+            letter-spacing: -1px
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--teal) 50%, var(--amber) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .hero p {
+            font-size: 14px;
+            color: var(--muted);
+            max-width: 500px;
+            line-height: 1.7;
+            margin-bottom: 32px
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center
+        }
+
+        .btn {
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s;
+            border: none;
+            letter-spacing: .01em
+        }
+
+        .btn-primary {
+            background: var(--teal);
+            color: #000
+        }
+
+        .btn-primary:hover {
+            background: #16b589
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border2)
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--blue);
+            color: var(--blue)
+        }
+
+        .btn-amber {
+            background: var(--amber);
+            color: #000
+        }
+
+        .btn-amber:hover {
+            background: #d9901f
+        }
+
+        .btn-blue {
+            background: var(--blue);
+            color: #fff
+        }
+
+        .btn-blue:hover {
+            background: #2d7de0
+        }
+
+        .btn-purple {
+            background: var(--purple);
+            color: #fff
+        }
+
+        .btn-purple:hover {
+            background: #7558e0
+        }
+
+        .btn-sm {
+            padding: 7px 14px;
+            font-size: 12px
+        }
+
+        .btn-coral {
+            background: var(--coral);
+            color: #fff
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 0;
+            margin-top: 48px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 700px;
+            width: 100%
+        }
+
+        .stat {
+            flex: 1;
+            padding: 16px 12px;
+            text-align: center;
+            border-right: 1px solid var(--border)
+        }
+
+        .stat:last-child {
+            border-right: none
+        }
+
+        .stat-n {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--teal)
+        }
+
+        .stat-l {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 2px
+        }
+
+        .how-row {
+            display: grid;
+            grid-template-columns:repeat(3, 1fr);
+            gap: 12px;
+            max-width: 800px;
+            margin: 48px auto 0;
+            padding: 0 20px
+        }
+
+        .how-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px
+        }
+
+        .how-num {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--teal);
+            letter-spacing: .12em;
+            margin-bottom: 6px
+        }
+
+        .how-card h3 {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 5px
+        }
+
+        .how-card p {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.6
+        }
+
+        .roles-row {
+            display: grid;
+            grid-template-columns:repeat(3, 1fr);
+            gap: 12px;
+            max-width: 800px;
+            margin: 32px auto 0;
+            padding: 0 20px 48px
+        }
+
+        .role-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .role-card:hover {
+            transform: translateY(-2px)
+        }
+
+        .role-card.worker:hover {
+            border-color: var(--teal)
+        }
+
+        .role-card.employer:hover {
+            border-color: var(--amber)
+        }
+
+        .role-card.broker-r:hover {
+            border-color: var(--purple)
+        }
+
+        .role-icon {
+            font-size: 24px;
+            margin-bottom: 10px
+        }
+
+        .role-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px
+        }
+
+        .role-card p {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.5
+        }
+
+        .role-cta {
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 10px
+        }
+
+        .role-card.worker .role-cta {
+            color: var(--teal)
+        }
+
+        .role-card.employer .role-cta {
+            color: var(--amber)
+        }
+
+        .role-card.broker-r .role-cta {
+            color: var(--purple)
+        }
+
+        /* AUTH */
+        .auth-wrap {
+            min-height: calc(100vh - 56px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 16px
+        }
+
+        .auth-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 480px
+        }
+
+        .auth-card h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 3px
+        }
+
+        .auth-card .sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 24px
+        }
+
+        .field {
+            margin-bottom: 14px
+        }
+
+        .field label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 5px
+        }
+
+        .field input, .field select, .field textarea {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 9px 11px;
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: .2s;
+            -webkit-appearance: none;
+            appearance: none
+        }
+
+        .field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7a9a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px
+        }
+
+        .field input:focus, .field select:focus, .field textarea:focus {
+            border-color: var(--teal)
+        }
+
+        .field select option {
+            background: var(--surface)
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 72px
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns:1fr 1fr;
+            gap: 10px
+        }
+
+        .tab-toggle {
+            display: flex;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 3px;
+            margin-bottom: 20px
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 6px;
+            border: none;
+            background: none;
+            color: var(--muted);
+            font-family: 'Syne', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .tab-btn.active {
+            background: var(--teal);
+            color: #000
+        }
+
+        .tab-btn.amber-active.active {
+            background: var(--amber);
+            color: #000
+        }
+
+        .tab-btn.purple-active.active {
+            background: var(--purple);
+            color: #fff
+        }
+
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 4px
+        }
+
+        .skill-chip {
+            padding: 4px 9px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 10px;
+            cursor: pointer;
+            color: var(--muted);
+            background: var(--bg);
+            transition: .2s;
+            font-family: 'JetBrains Mono', monospace;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        .skill-chip.on {
+            background: var(--teal-bg);
+            border-color: var(--teal);
+            color: var(--teal)
+        }
+
+        .skill-chip.amber.on {
+            background: var(--amber-bg);
+            border-color: var(--amber);
+            color: var(--amber)
+        }
+
+        .success-banner {
+            background: var(--teal-bg);
+            border: 1px solid rgba(29, 201, 154, .4);
+            border-radius: 7px;
+            padding: 11px 14px;
+            font-size: 12px;
+            color: var(--teal);
+            margin-bottom: 14px;
+            display: none
+        }
+
+        .amber-banner {
+            background: var(--amber-bg);
+            border: 1px solid rgba(245, 166, 35, .4);
+            border-radius: 7px;
+            padding: 11px 14px;
+            font-size: 12px;
+            color: var(--amber);
+            margin-bottom: 14px;
+            display: none
+        }
+
+        .purple-banner {
+            background: var(--purple-bg);
+            border: 1px solid rgba(139, 110, 245, .4);
+            border-radius: 7px;
+            padding: 11px 14px;
+            font-size: 12px;
+            color: var(--purple);
+            margin-bottom: 14px;
+            display: none
+        }
+
+        .info-box {
+            background: var(--blue-bg);
+            border: 1px solid rgba(59, 142, 240, .25);
+            border-radius: 7px;
+            padding: 10px 13px;
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 14px
+        }
+
+        .info-box strong {
+            color: var(--blue)
+        }
+
+        /* CITY SELECT REVEAL */
+        .city-field {
+            display: none;
+            animation: fadeIn .25s ease
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .city-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--purple-bg);
+            border: 1px solid rgba(139, 110, 245, .35);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 11px;
+            color: var(--purple);
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 6px
+        }
+
+        /* POST JOB */
+        .post-wrap {
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 28px 16px
+        }
+
+        .post-wrap h2 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 3px
+        }
+
+        .post-wrap .sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 24px
+        }
+
+        .preview-card {
+            background: var(--blue-bg);
+            border: 1px solid rgba(59, 142, 240, .3);
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 16px;
+            display: none
+        }
+
+        .preview-card h4 {
+            font-size: 11px;
+            color: var(--blue);
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 8px
+        }
+
+        .preview-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(59, 142, 240, .15)
+        }
+
+        .preview-row:last-child {
+            border-bottom: none
+        }
+
+        .preview-row span:first-child {
+            color: var(--muted)
+        }
+
+        /* FEED */
+        .feed-wrap {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 24px 16px
+        }
+
+        .feed-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px
+        }
+
+        .feed-top h2 {
+            font-size: 19px;
+            font-weight: 800
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch
+        }
+
+        .filter-chip {
+            padding: 5px 11px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 10px;
+            cursor: pointer;
+            color: var(--muted);
+            background: var(--bg);
+            transition: .2s;
+            font-family: 'JetBrains Mono', monospace;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        .filter-chip:hover, .filter-chip.on {
+            background: var(--blue-bg);
+            border-color: var(--blue);
+            color: var(--blue)
+        }
+
+        .job-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            padding: 16px;
+            margin-bottom: 10px;
+            transition: .2s
+        }
+
+        .job-card:hover {
+            border-color: var(--border2);
+            transform: translateY(-1px)
+        }
+
+        .job-card.accepted {
+            border-color: rgba(29, 201, 154, .4);
+            background: var(--teal-bg)
+        }
+
+        .job-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px
+        }
+
+        .job-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 3px
+        }
+
+        .job-emp {
+            font-size: 11px;
+            color: var(--muted)
+        }
+
+        .job-pay {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--teal);
+            white-space: nowrap
+        }
+
+        .job-pay span {
+            font-size: 10px;
+            font-weight: 400;
+            color: var(--muted)
+        }
+
+        .job-tags {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+            flex-wrap: wrap
+        }
+
+        .tag {
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .tag-blue {
+            background: var(--blue-bg);
+            color: var(--blue)
+        }
+
+        .tag-amber {
+            background: var(--amber-bg);
+            color: var(--amber)
+        }
+
+        .tag-teal {
+            background: var(--teal-bg);
+            color: var(--teal)
+        }
+
+        .tag-purple {
+            background: var(--purple-bg);
+            color: var(--purple)
+        }
+
+        .tag-coral {
+            background: var(--coral-bg);
+            color: var(--coral)
+        }
+
+        .job-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .job-meta {
+            font-size: 10px;
+            color: var(--muted);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 3px
+        }
+
+        .dot-green {
+            background: var(--teal)
+        }
+
+        .dot-amber {
+            background: var(--amber)
+        }
+
+        .dot-blue {
+            background: var(--blue)
+        }
+
+        /* BROKER REGISTER */
+        .broker-reg-wrap {
+            min-height: calc(100vh - 56px);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 28px 16px
+        }
+
+        .broker-steps {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px
+        }
+
+        .bstep {
+            flex: 1;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--border);
+            transition: .3s
+        }
+
+        .bstep.done {
+            background: var(--purple)
+        }
+
+        .bstep.active {
+            background: var(--amber)
+        }
+
+        .pending-card {
+            background: var(--amber-bg);
+            border: 1px solid rgba(245, 166, 35, .3);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 12px;
+            text-align: center
+        }
+
+        .pending-card .pc-icon {
+            font-size: 28px;
+            margin-bottom: 8px
+        }
+
+        .pending-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--amber);
+            margin-bottom: 5px
+        }
+
+        .pending-card p {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.5
+        }
+
+        /* BROKER DASHBOARD */
+        .dash-wrap {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 24px 16px
+        }
+
+        .dash-header {
+            margin-bottom: 20px
+        }
+
+        .dash-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 2px
+        }
+
+        .dash-header p {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .city-lock-banner {
+            background: var(--purple-bg);
+            border: 1px solid rgba(139, 110, 245, .3);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--purple);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns:repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px
+        }
+
+        .kpi {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px
+        }
+
+        .kpi-n {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 1px
+        }
+
+        .kpi-l {
+            font-size: 10px;
+            color: var(--muted)
+        }
+
+        .kpi-blue .kpi-n {
+            color: var(--blue)
+        }
+
+        .kpi-teal .kpi-n {
+            color: var(--teal)
+        }
+
+        .kpi-amber .kpi-n {
+            color: var(--amber)
+        }
+
+        .kpi-purple .kpi-n {
+            color: var(--purple)
+        }
+
+        .sec-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            margin-bottom: 10px
+        }
+
+        .worker-table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 20px;
+            border-radius: 10px
+        }
+
+        .worker-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            min-width: 560px
+        }
+
+        .worker-table th {
+            background: var(--surface2);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            padding: 9px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .worker-table td {
+            padding: 10px 12px;
+            font-size: 12px;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .worker-table tr:last-child td {
+            border-bottom: none
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .badge-teal {
+            background: var(--teal-bg);
+            color: var(--teal)
+        }
+
+        .badge-amber {
+            background: var(--amber-bg);
+            color: var(--amber)
+        }
+
+        .badge-blue {
+            background: var(--blue-bg);
+            color: var(--blue)
+        }
+
+        .badge-coral {
+            background: var(--coral-bg);
+            color: var(--coral)
+        }
+
+        .badge-purple {
+            background: var(--purple-bg);
+            color: var(--purple)
+        }
+
+        /* ADD WORKER MODAL */
+        .modal-overlay {
+            background: rgba(0, 0, 0, .5);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            display: none
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            padding: 20px
+        }
+
+        .modal-box h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--amber)
+        }
+
+        .modal-box p.msub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 18px
+        }
+
+        /* ADMIN */
+        .admin-wrap {
+            max-width: 1060px;
+            margin: 0 auto;
+            padding: 24px 16px
+        }
+
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .admin-header h2 {
+            font-size: 20px;
+            font-weight: 800
+        }
+
+        .alert-banner {
+            background: rgba(240, 96, 96, .1);
+            border: 1px solid rgba(240, 96, 96, .3);
+            border-radius: 7px;
+            padding: 9px 14px;
+            font-size: 11px;
+            color: var(--coral);
+            margin-bottom: 16px
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns:1fr 1fr;
+            gap: 16px
+        }
+
+        .admin-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px
+        }
+
+        .jobs-table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch
+        }
+
+        .jobs-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 380px
+        }
+
+        .jobs-table th {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            padding: 5px 9px;
+            text-align: left;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .jobs-table td {
+            padding: 7px 9px;
+            font-size: 11px;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .jobs-table tr:last-child td {
+            border-bottom: none
+        }
+
+        .district-map {
+            display: grid;
+            grid-template-columns:repeat(3, 1fr);
+            gap: 6px
+        }
+
+        .district-cell {
+            background: var(--surface2);
+            border-radius: 5px;
+            padding: 7px 9px;
+            text-align: center
+        }
+
+        .district-cell .dn {
+            font-size: 10px;
+            color: var(--muted);
+            margin-bottom: 2px
+        }
+
+        .district-cell .dv {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--blue)
+        }
+
+        .broker-approval-card {
+            background: var(--purple-bg);
+            border: 1px solid rgba(139, 110, 245, .25);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 8px
+        }
+
+        .bac-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .bac-name {
+            font-size: 13px;
+            font-weight: 700
+        }
+
+        .bac-meta {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px
+        }
+
+        .bac-city {
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--purple);
+            margin-top: 4px
+        }
+
+        .bac-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+            flex-wrap: wrap
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 16px 0
+        }
+
+        .flex-between {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .gap-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px
+        }
+
+        .bar-row:last-child {
+            margin-bottom: 0
+        }
+
+        .bar-label {
+            font-size: 11px;
+            color: var(--muted);
+            min-width: 80px
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 7px;
+            background: var(--surface2);
+            border-radius: 4px;
+            overflow: hidden
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 4px
+        }
+
+        .bar-val {
+            font-size: 10px;
+            color: var(--text);
+            min-width: 36px;
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .chart-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 16px;
+            left: 16px;
+            max-width: 360px;
+            margin: 0 auto;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 10px 18px;
+            border-radius: 7px;
+            display: none;
+            z-index: 999;
+            animation: slideUp .3s ease;
+            text-align: center
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(16px);
+                opacity: 0
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        .toast-teal {
+            background: var(--teal);
+            color: #000
+        }
+
+        .toast-amber {
+            background: var(--amber);
+            color: #000
+        }
+
+        .toast-purple {
+            background: var(--purple);
+            color: #fff
+        }
+
+        .toast-coral {
+            background: var(--coral);
+            color: #fff
+        }
+
+        /* BROKER CHARTS ROW */
+        .broker-charts-row {
+            display: grid;
+            grid-template-columns:1fr 1fr;
+            gap: 14px
+        }
+
+        /* â”€â”€ RESPONSIVE â”€â”€ */
+        @media (max-width: 760px) {
+            .hamburger {
+                display: flex
+            }
+
+            .nav-tabs {
+                display: none
+            }
+
+            .roles-row, .how-row {
+                grid-template-columns:1fr
+            }
+
+            .field-row {
+                grid-template-columns:1fr
+            }
+
+            .admin-grid {
+                grid-template-columns:1fr
+            }
+
+            .kpi-row {
+                grid-template-columns:1fr 1fr
+            }
+
+            .broker-charts-row {
+                grid-template-columns:1fr
+            }
+
+            .stats-row {
+                display: grid;
+                grid-template-columns:1fr 1fr
+            }
+
+            .stat {
+                border-right: none;
+                border-bottom: 1px solid var(--border)
+            }
+
+            .stat:nth-child(2n) {
+                border-right: none
+            }
+
+            .stat:nth-child(odd) {
+                border-right: 1px solid var(--border)
+            }
+
+            .stat:nth-last-child(-n+2) {
+                border-bottom: none
+            }
+
+            .auth-card {
+                padding: 22px 18px
+            }
+
+            .feed-top {
+                flex-direction: column
+            }
+
+            .feed-top > div:last-child {
+                width: 100%
+            }
+
+            .feed-top select {
+                width: 100%
+            }
+
+            .btn-row {
+                flex-direction: column;
+                align-items: center;
+                width: 100%
+            }
+
+            .btn-row .btn {
+                width: 100%;
+                max-width: 280px
+            }
+
+            .hero {
+                padding: 32px 18px
+            }
+
+            .how-row, .roles-row {
+                padding: 0 16px
+            }
+
+            .roles-row {
+                padding-bottom: 36px
+            }
+
+            .city-lock-banner {
+                flex-direction: column
+            }
+        }
+
+        @media (max-width: 400px) {
+            .kpi-row {
+                grid-template-columns:1fr 1fr
+            }
+
+            .kpi-n {
+                font-size: 18px
+            }
+
+            .district-map {
+                grid-template-columns:1fr 1fr
+            }
+
+            .nav-brand {
+                font-size: 14px
+            }
+
+            .btn {
+                padding: 10px 16px;
+                font-size: 12px
+            }
+        }
+    </style>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-brand" onclick="goto('home')">ðŸŒ´ LankaMicroJob</div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="goto('home')">Home</button>
+            <button class="nav-tab" onclick="goto('worker-auth')">Worker</button>
+            <button class="nav-tab" onclick="goto('employer-auth')">Employer</button>
+            <button class="nav-tab broker-tab" onclick="goto('broker-register')">Broker Apply</button>
+            <button class="nav-tab" onclick="goto('post-job')">Post Job</button>
+            <button class="nav-tab" onclick="goto('feed')">Job Feed</button>
+            <button class="nav-tab broker-tab" onclick="goto('broker-dash')">Broker Dash</button>
+            <button class="nav-tab" onclick="goto('admin')">Admin</button>
+        </div>
+        <button aria-label="Menu" class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobile-menu">
+        <button class="nav-tab active" onclick="mobileGoto('home')">ðŸ  Home</button>
+        <button class="nav-tab" onclick="mobileGoto('worker-auth')">ðŸ‘· Worker</button>
+        <button class="nav-tab" onclick="mobileGoto('employer-auth')">ðŸ—ï¸ Employer</button>
+        <button class="nav-tab broker-tab" onclick="mobileGoto('broker-register')">ðŸ¤ Broker Apply</button>
+        <button class="nav-tab" onclick="mobileGoto('post-job')">ðŸ“‹ Post Job</button>
+        <button class="nav-tab" onclick="mobileGoto('feed')">ðŸ“¡ Job Feed</button>
+        <button class="nav-tab broker-tab" onclick="mobileGoto('broker-dash')">ðŸ“Š Broker Dash</button>
+        <button class="nav-tab" onclick="mobileGoto('admin')">âš™ï¸ Admin</button>
+    </div>
+
+    <!-- â•â• HOME â•â• -->
+    <div class="page active" id="page-home">
+        <div class="hero">
+            <div class="hero-bg"></div>
+            <div class="hero-badge">ðŸ‡±ðŸ‡° Sri Lanka's Daily Work Platform</div>
+            <h1>Find Daily Work.<br/><span>Get Paid Fast.</span></h1>
+            <p>Workers, employers, and brokers â€” all connected across every district. Construction, agriculture,
+                logistics â€” matched in minutes.</p>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="goto('worker-auth')">I'm a Worker</button>
+                <button class="btn btn-amber" onclick="goto('employer-auth')">I'm an Employer</button>
+                <button class="btn btn-purple" onclick="goto('broker-register')">Become a Broker</button>
+            </div>
+            <div class="stats-row">
+                <div class="stat">
+                    <div class="stat-n">24K+</div>
+                    <div class="stat-l">Workers</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-n">3.8K</div>
+                    <div class="stat-l">Jobs / Week</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-n">47</div>
+                    <div class="stat-l">Brokers</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-n">25</div>
+                    <div class="stat-l">Districts</div>
+                </div>
+            </div>
+        </div>
+        <div class="roles-row">
+            <div class="role-card worker" onclick="goto('worker-auth')">
+                <div class="role-icon">ðŸ‘·</div>
+                <h3>Worker</h3>
+                <p>Register with your NIC, pick your skills and district. Jobs come to you â€” accept from your
+                    phone.</p>
+                <div class="role-cta">Register as worker â†’</div>
+            </div>
+            <div class="role-card employer" onclick="goto('employer-auth')">
+                <div class="role-icon">ðŸ—ï¸</div>
+                <h3>Employer</h3>
+                <p>Post a job in minutes. Matched workers are notified by SMS. Pay securely via PayHere.</p>
+                <div class="role-cta">Post a job â†’</div>
+            </div>
+            <div class="role-card broker-r" onclick="goto('broker-register')">
+                <div class="role-icon">ðŸ¤</div>
+                <h3>District Broker</h3>
+                <p>Manage offline workers in your city. Register workers who can't use the app. Earn commission on every
+                    placement.</p>
+                <div class="role-cta">Apply as broker â†’</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- â•â• WORKER AUTH â•â• -->
+    <div class="page" id="page-worker-auth">
+        <div class="auth-wrap">
+            <div class="auth-card">
+                <h2>Worker Portal</h2>
+                <p class="sub">à·à·Šâ€à¶»à¶¸à·’à¶šà¶ºà· / à®¤à¯Šà®´à®¿à®²à®¾à®³à®°à¯</p>
+                <div class="tab-toggle">
+                    <button class="tab-btn active" onclick="wtab('login',this)">Login</button>
+                    <button class="tab-btn" onclick="wtab('register',this)">Register</button>
+                </div>
+                <div class="success-banner" id="success-worker">âœ“ Registered! Redirecting to Job Feed...</div>
+                <div id="worker-login">
+                    <div class="field"><label>Gmail</label><input id="wl-email" placeholder="worker@gmail.com"
+                                                                  type="email"/></div>
+                    <div class="field"><label>Password</label><input id="wl-password" placeholder="••••••••"
+                                                                     type="password"/></div>
+                    <button class="btn btn-primary" onclick="workerLogin()" style="width:100%">Login & View Jobs
+                    </button>
+                </div>
+                <div id="worker-register" style="display:none">
+                    <div class="field-row">
+                        <div class="field"><label>Full Name</label><input id="wr-name" placeholder="Kamal Perera"/>
+                        </div>
+                        <div class="field"><label>Mobile</label><input id="wr-phone" placeholder="07X XXX XXXX"
+                                                                       type="tel"/></div>
+                    </div>
+                    <div class="field"><label>NIC Number</label><input id="wr-nic" placeholder="XXXXXXXXV"/></div>
+                    <div class="field-row">
+                        <div class="field"><label>Gmail</label><input id="wr-email" placeholder="worker@gmail.com"
+                                                                      type="email"/></div>
+                        <div class="field"><label>Password</label><input id="wr-password" placeholder="••••••••"
+                                                                         type="password"/></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>District</label>
+                            <select id="wr-district" onchange="cascadeCity('wr-district','wr-city-field','wr-city')">
+                                <option value="">Select District...</option>
+                            </select>
+                        </div>
+                        <div class="field city-field" id="wr-city-field">
+                            <label>City / Town</label>
+                            <select id="wr-city">
+                                <option value="">Select City...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field"><label>Skills</label>
+                        <div class="skills-grid">
+                            <span class="skill-chip" onclick="toggleSkill(this)">Construction</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Plumbing</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Electrical</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Agriculture</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Driving</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Cleaning</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Painting</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Welding</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Logistics</span>
+                        </div>
+                    </div>
+                    <div class="field"><label>Availability</label>
+                        <select>
+                            <option>Full Days</option>
+                            <option>Half Days</option>
+                            <option>Weekends Only</option>
+                            <option>Flexible</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="workerRegister()" style="width:100%;margin-top:4px">
+                        Register & Find Jobs
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- â•â• EMPLOYER AUTH â•â• -->
+    <div class="page" id="page-employer-auth">
+        <div class="auth-wrap">
+            <div class="auth-card">
+                <h2>Employer Portal</h2>
+                <p class="sub">à·ƒà·šà·€à· à¶ºà·à¶¢à¶šà¶ºà· / à®®à¯à®¤à®²à®¾à®³à®¿</p>
+                <div class="tab-toggle">
+                    <button class="tab-btn amber-active active" onclick="etab('login',this)">Login</button>
+                    <button class="tab-btn amber-active" onclick="etab('register',this)">Register</button>
+                </div>
+                <div class="amber-banner" id="success-employer">âœ“ Account created! You can now post jobs.</div>
+                <div id="employer-login">
+                    <div class="field"><label>Gmail</label><input id="el-email" placeholder="employer@gmail.com"
+                                                                  type="email"/></div>
+                    <div class="field"><label>Password</label><input id="el-password" placeholder="••••••••"
+                                                                     type="password"/></div>
+                    <button class="btn btn-amber" onclick="employerLogin()" style="width:100%">Login & Post Jobs
+                    </button>
+                </div>
+                <div id="employer-register" style="display:none">
+                    <div class="field-row">
+                        <div class="field"><label>Business Name</label><input id="er-biz"
+                                                                              placeholder="Silva Constructions Pvt Ltd"/></div>
+                        <div class="field"><label>Contact Person</label><input id="er-name" placeholder="Nimal Silva"/>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field"><label>Mobile</label><input id="er-phone" placeholder="07X XXX XXXX"
+                                                                       type="tel"/></div>
+                        <div class="field"><label>Gmail</label><input id="er-email" placeholder="employer@gmail.com"
+                                                                      type="email"/></div>
+                        <div class="field"><label>Password</label><input id="er-password" placeholder="••••••••"
+                                                                         type="password"/></div>
+                    </div>
+                    <div class="field"><label>Business Category</label>
+                        <select>
+                            <option>Construction & Real Estate</option>
+                            <option>Agriculture & Farming</option>
+                            <option>Transport & Logistics</option>
+                            <option>Hospitality & Events</option>
+                            <option>Manufacturing</option>
+                            <option>Retail</option>
+                        </select>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>District</label>
+                            <select id="er-district" onchange="cascadeCity('er-district','er-city-field','er-city')">
+                                <option value="">Select District...</option>
+                            </select>
+                        </div>
+                        <div class="field city-field" id="er-city-field">
+                            <label>City / Town</label>
+                            <select id="er-city">
+                                <option value="">Select City...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-amber" onclick="employerRegister()" style="width:100%;margin-top:4px">Create
+                        Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page" id="page-worker-dash">
+        <div class="dash-wrap">
+            <div class="dash-header">
+                <h2>Worker Dashboard</h2>
+                <p><span id="worker-dash-name">Worker</span> &middot; <span id="worker-dash-city">City pending</span></p>
+            </div>
+            <div class="city-lock-banner">
+                <span style="font-size:16px;flex-shrink:0">LOCK</span>
+                <div>
+                    <strong id="worker-approval-title">Admin approval required</strong>
+                    <span id="worker-approval-text" style="color:var(--muted);font-size:11px;margin-left:4px">After approval you can accept jobs in your city.</span>
+                </div>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi kpi-teal"><div class="kpi-n" id="worker-status-kpi">PENDING</div><div class="kpi-l">Approval Status</div></div>
+                <div class="kpi kpi-blue"><div class="kpi-n" id="worker-city-kpi">-</div><div class="kpi-l">Job City</div></div>
+            </div>
+            <button class="btn btn-primary" onclick="goto('feed')">Open Job Feed</button>
+        </div>
+    </div>
+
+    <div class="page" id="page-employer-dash">
+        <div class="dash-wrap">
+            <div class="dash-header">
+                <h2>Employer Dashboard</h2>
+                <p><span id="employer-dash-name">Employer</span> &middot; <span id="employer-dash-city">City pending</span></p>
+            </div>
+            <div class="city-lock-banner">
+                <span style="font-size:16px;flex-shrink:0">LOCK</span>
+                <div>
+                    <strong id="employer-approval-title">Admin approval required</strong>
+                    <span id="employer-approval-text" style="color:var(--muted);font-size:11px;margin-left:4px">After approval you can post jobs.</span>
+                </div>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi kpi-amber"><div class="kpi-n" id="employer-status-kpi">PENDING</div><div class="kpi-l">Approval Status</div></div>
+                <div class="kpi kpi-blue"><div class="kpi-n" id="employer-city-kpi">-</div><div class="kpi-l">Business City</div></div>
+            </div>
+            <button class="btn btn-amber" onclick="goto('post-job')">Post Job</button>
+        </div>
+    </div>
+
+    <!-- â•â• BROKER REGISTER â•â• -->
+    <div class="page" id="page-broker-register">
+        <div class="broker-reg-wrap">
+            <div class="auth-card" style="max-width:520px">
+                <h2 style="color:var(--purple)">Broker Application</h2>
+                <p class="sub">à¶¯à·’à·ƒà·Šà¶­à·Šâ€à¶»à·’à¶šà·Š à¶¶à·Šâ€à¶»à·à¶šà¶»à·Š / à®®à®¾à®µà®Ÿà¯à®Ÿ
+                    à®¤à®°à®•à®°à¯ â€” Apply to manage workers in your city</p>
+
+                <div class="broker-steps" id="broker-steps-bar">
+                    <div class="bstep active" id="bs1"></div>
+                    <div class="bstep" id="bs2"></div>
+                    <div class="bstep" id="bs3"></div>
+                </div>
+
+                <div class="purple-banner" id="broker-pending">â³ Application submitted! Awaiting admin approval...
+                </div>
+                <div class="success-banner" id="broker-approved-msg">âœ… Approved! Your Broker ID: <strong
+                        id="broker-id-display">BRK-0051</strong>. Redirecting to dashboard...
+                </div>
+
+                <!-- STEP 1 -->
+                <div id="bstep1">
+                    <div class="info-box"><strong>What is a Broker?</strong> A broker manages workers in a specific city
+                        or district who don't have smartphones or can't use this platform themselves. You register them,
+                        receive job matches on their behalf, and earn a transparent commission per placement.
+                    </div>
+                    <div class="field-row">
+                        <div class="field"><label>Full Name</label><input id="br-name" placeholder="Ranjith Fernando"/>
+                        </div>
+                        <div class="field"><label>NIC Number</label><input id="br-nic" placeholder="XXXXXXXXV"/></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field"><label>Mobile Number</label><input id="br-phone" placeholder="07X XXX XXXX"
+                                                                              type="tel"/></div>
+                        <div class="field"><label>WhatsApp (optional)</label><input placeholder="07X XXX XXXX"
+                                                                                    type="tel"/></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field"><label>Email</label><input id="br-email" placeholder="ranjith@email.com"
+                                                                      type="email"/></div>
+                        <div class="field"><label>Password</label><input id="br-password" placeholder="••••••••"
+                                                                         type="password"/></div>
+                    </div>
+                    <button class="btn btn-purple" onclick="bNext(2)" style="width:100%">Next â€” Choose Your City â†’
+                    </button>
+                </div>
+
+                <!-- STEP 2: City Lock -->
+                <div id="bstep2" style="display:none">
+                    <div class="info-box"><strong>City / District Assignment</strong> â€” You will be <strong>locked to
+                        this district</strong>. You can only register workers and manage jobs within your assigned city.
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Assigned District</label>
+                            <select id="br-district"
+                                    onchange="cascadeCity('br-district','br-city-field','br-city');updateCityBadge()">
+                                <option value="">Select your district...</option>
+                            </select>
+                        </div>
+                        <div class="field city-field" id="br-city-field">
+                            <label>Specific City / Town</label>
+                            <select id="br-city" onchange="updateCityBadge()">
+                                <option value="">Select City...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="city-badge-wrap"></div>
+                    <div class="field" style="margin-top:10px"><label>Years experience as labour broker</label>
+                        <select id="br-exp">
+                            <option>Less than 1 year</option>
+                            <option>1â€“3 years</option>
+                            <option>3â€“5 years</option>
+                            <option>5+ years</option>
+                        </select>
+                    </div>
+                    <div class="field"><label>Estimated workers you manage currently</label>
+                        <select>
+                            <option>1â€“5 workers</option>
+                            <option>6â€“15 workers</option>
+                            <option>16â€“30 workers</option>
+                            <option>30+ workers</option>
+                        </select>
+                    </div>
+                    <div class="flex-between" style="gap:8px;margin-top:4px">
+                        <button class="btn btn-secondary" onclick="bNext(1)" style="flex:1">â† Back</button>
+                        <button class="btn btn-purple" onclick="bNext(3)" style="flex:2">Next â€” Agreement â†’</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Agreement -->
+                <div id="bstep3" style="display:none">
+                    <div class="info-box">
+                        <strong>Commission Structure</strong><br/>
+                        Platform commission: <strong style="color:var(--teal)">7.5%</strong> of worker's daily pay per
+                        placement.<br/>
+                        This is fixed, transparent, and shown to workers.
+                    </div>
+                    <div class="field"><label>How do you currently find workers?</label>
+                        <textarea
+                                placeholder="e.g. I manage a WhatsApp group of 12 construction workers in Gampaha who don't own smartphones..."></textarea>
+                    </div>
+                    <div class="field"><label>ID Proof (describe for demo)</label>
+                        <input placeholder="NIC / Grama Niladari letter / Police clearance ref."/>
+                    </div>
+                    <div style="background:var(--surface2);border-radius:7px;padding:12px;margin-bottom:14px;font-size:11px;color:var(--muted);line-height:1.6">
+                        <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer">
+                            <input id="broker-agree" style="width:auto;margin-top:2px" type="checkbox"/>
+                            <span>I agree to the Lanka MicroJob Broker Code of Conduct. I will not charge workers above the platform commission rate, and I accept that my district assignment is fixed unless re-approved by admin.</span>
+                        </label>
+                    </div>
+                    <div class="flex-between" style="gap:8px">
+                        <button class="btn btn-secondary" onclick="bNext(2)" style="flex:1">â† Back</button>
+                        <button class="btn btn-purple" onclick="brokerSubmit()" style="flex:2">Submit Application
+                        </button>
+                    </div>
+                    <div class="pending-card" id="broker-pending-card" style="display:none">
+                        <div class="pc-icon">â³</div>
+                        <h3>Application Submitted</h3>
+                        <p>Your application is under review by the Lanka MicroJob admin team. You'll receive an SMS once
+                            approved.<br/><br/><strong style="color:var(--amber)">Typical review time: 1â€“2 business
+                                days.</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- â•â• POST JOB â•â• -->
+    <div class="page" id="page-post-job">
+        <div class="post-wrap">
+            <h2>Post a Job</h2>
+            <p class="sub">Fill in the details â€” matched workers are notified within minutes.</p>
+            <div class="field"><label>Job Title</label><input id="pj-title"
+                                                              oninput="updatePreview()" placeholder="e.g. 3 Construction Workers Needed"/></div>
+            <div class="field"><label>Job Category</label>
+                <select id="pj-cat" onchange="updatePreview()">
+                    <option>Construction</option>
+                    <option>Agriculture</option>
+                    <option>Driving / Delivery</option>
+                    <option>Cleaning</option>
+                    <option>Painting</option>
+                    <option>Plumbing</option>
+                    <option>Electrical</option>
+                    <option>Event Staff</option>
+                </select>
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label>District</label>
+                    <select id="pj-dist" onchange="cascadeCity('pj-dist','pj-city-field','pj-city');updatePreview()">
+                        <option value="">Select District...</option>
+                    </select>
+                </div>
+                <div class="field city-field" id="pj-city-field">
+                    <label>City / Town</label>
+                    <select id="pj-city" onchange="updatePreview()">
+                        <option value="">Select City...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field"><label>Date Needed</label><input id="pj-date" onchange="updatePreview()"
+                                                                    type="date"/></div>
+                <div class="field"><label>Workers Needed</label><input id="pj-count" min="1" oninput="updatePreview()" type="number"
+                                                                       value="2"/></div>
+            </div>
+            <div class="field"><label>Pay per Worker (â‚¨/day)</label><input id="pj-pay" oninput="updatePreview()"
+                                                                             placeholder="2500" type="number"/>
+            </div>
+            <div class="field"><label>Required Skills</label>
+                <div class="skills-grid">
+                    <span class="skill-chip" onclick="toggleSkill(this)">Heavy Lifting</span>
+                    <span class="skill-chip" onclick="toggleSkill(this)">Driving License</span>
+                    <span class="skill-chip" onclick="toggleSkill(this)">Masonry</span>
+                    <span class="skill-chip" onclick="toggleSkill(this)">Carpentry</span>
+                    <span class="skill-chip amber" onclick="toggleSkillAmber(this)">No Experience Needed</span>
+                </div>
+            </div>
+            <div class="field"><label>Additional Notes</label><textarea
+                    placeholder="Start time, site address, tools needed..."></textarea></div>
+            <div class="preview-card" id="pj-preview">
+                <h4>Job Preview</h4>
+                <div class="preview-row"><span>Title</span><span id="prev-title">â€”</span></div>
+                <div class="preview-row"><span>Category</span><span id="prev-cat">â€”</span></div>
+                <div class="preview-row"><span>District</span><span id="prev-dist">â€”</span></div>
+                <div class="preview-row"><span>City</span><span id="prev-city">â€”</span></div>
+                <div class="preview-row"><span>Workers</span><span id="prev-count">â€”</span></div>
+                <div class="preview-row"><span>Total Pay</span><span id="prev-pay" style="color:var(--teal)">â€”</span>
+                </div>
+            </div>
+            <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn btn-secondary"
+                        onclick="updatePreview();document.getElementById('pj-preview').style.display='block'">Preview
+                </button>
+                <button class="btn btn-amber" onclick="submitJob()">Post Job â€” Notify Workers</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- â•â• FEED â•â• -->
+    <div class="page" id="page-feed">
+        <div class="feed-wrap">
+            <div class="feed-top">
+                <div><h2>Nearby Jobs</h2>
+                    <p style="font-size:11px;color:var(--muted)">Colombo District Â· Updated 2 min ago</p></div>
+                <div class="gap-row" style="width:100%">
+                    <span class="mono"
+                          style="font-size:10px;color:var(--teal);background:var(--teal-bg);padding:3px 9px;border-radius:20px;white-space:nowrap">â¬¤ 3 new</span>
+                    <select onchange="filterFeed(this.value)"
+                            style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;padding:5px 8px;outline:none;flex:1;min-width:120px">
+                        <option value="all">All Categories</option>
+                        <option value="Construction">Construction</option>
+                        <option value="Agriculture">Agriculture</option>
+                        <option value="Driving">Driving</option>
+                        <option value="Cleaning">Cleaning</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-row">
+                <span class="filter-chip on" onclick="filterDist(this,'all')">All Districts</span>
+                <span class="filter-chip" onclick="filterDist(this,'Colombo')">Colombo</span>
+                <span class="filter-chip" onclick="filterDist(this,'Gampaha')">Gampaha</span>
+                <span class="filter-chip" onclick="filterDist(this,'Kandy')">Kandy</span>
+                <span class="filter-chip" onclick="filterDist(this,'Galle')">Galle</span>
+            </div>
+            <div id="job-list"></div>
+        </div>
+    </div>
+
+    <!-- â•â• BROKER DASHBOARD â•â• -->
+    <div class="page" id="page-broker-dash">
+        <div class="dash-wrap">
+            <div class="dash-header">
+                <h2>Broker Dashboard</h2>
+                <p>Ranjith Fernando Â· <span class="mono" style="font-size:11px;color:var(--purple)">BRK-0042</span></p>
+            </div>
+            <div class="city-lock-banner">
+                <span style="font-size:16px;flex-shrink:0">ðŸ“</span>
+                <div>
+                    <strong>City-Locked: Gampaha District</strong>
+                    <span style="color:var(--muted);font-size:11px;margin-left:4px">You can only register workers and manage jobs within Gampaha District.</span>
+                </div>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi kpi-blue">
+                    <div class="kpi-n">12</div>
+                    <div class="kpi-l">Managed Workers</div>
+                </div>
+                <div class="kpi kpi-teal">
+                    <div class="kpi-n">8</div>
+                    <div class="kpi-l">Active This Week</div>
+                </div>
+                <div class="kpi kpi-amber">
+                    <div class="kpi-n">â‚¨18,400</div>
+                    <div class="kpi-l">Commission (MTD)</div>
+                </div>
+                <div class="kpi kpi-purple">
+                    <div class="kpi-n">4.7â˜…</div>
+                    <div class="kpi-l">Avg Worker Rating</div>
+                </div>
+            </div>
+            <div class="flex-between" style="margin-bottom:10px">
+                <p class="sec-title">My Workers â€” Gampaha District Only</p>
+                <button class="btn btn-purple btn-sm" onclick="toggleAddWorker()">+ Register Offline Worker</button>
+            </div>
+            <div class="modal-overlay" id="add-worker-modal">
+                <div class="modal-box">
+                    <h3>Register Offline Worker</h3>
+                    <p class="msub">This worker has no smartphone — job notifications will go to the broker Gmail on
+                        file.</p>
+                    <div class="field-row">
+                        <div class="field"><label>Worker's Full Name</label><input id="aw-name"
+                                                                                   placeholder="Suresh Kumara"/></div>
+                        <div class="field"><label>Worker's NIC</label><input id="aw-nic" placeholder="XXXXXXXXV"/></div>
+                    </div>
+                    <div class="field"><label>Worker's District / Area</label>
+                        <input readonly style="color:var(--muted);cursor:not-allowed" value="Gampaha District"/>
+                        <div style="font-size:10px;color:var(--purple);margin-top:4px">ðŸ”’ Locked to your assigned
+                            district
+                        </div>
+                    </div>
+                    <div class="field"><label>Worker's Skills</label>
+                        <div class="skills-grid">
+                            <span class="skill-chip" onclick="toggleSkill(this)">Construction</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Plumbing</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Agriculture</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Driving</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Cleaning</span>
+                            <span class="skill-chip" onclick="toggleSkill(this)">Welding</span>
+                        </div>
+                    </div>
+                    <div class="field"><label>Worker's Availability</label>
+                        <select>
+                            <option>Full Days</option>
+                            <option>Half Days</option>
+                            <option>Flexible</option>
+                        </select>
+                    </div>
+                    <div class="info-box" style="margin-bottom:12px">Worker will be linked to Broker ID
+                        <strong>BRK-0042</strong>. SMS notifications go to your number <strong>+94 77 XXX XXXX</strong>.
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button class="btn btn-secondary btn-sm" onclick="toggleAddWorker()">Cancel</button>
+                        <button class="btn btn-purple btn-sm" onclick="addWorker()">Register Worker</button>
+                    </div>
+                </div>
+            </div>
+            <div class="worker-table-wrap">
+                <table class="worker-table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Skills</th>
+                        <th>Area</th>
+                        <th>Status</th>
+                        <th>Jobs</th>
+                        <th>Rating</th>
+                        <th>Commission</th>
+                    </tr>
+                    </thead>
+                    <tbody id="broker-worker-tbody">
+                    <tr>
+                        <td>Suresh Kumara</td>
+                        <td><span class="badge badge-blue">Construction</span></td>
+                        <td>Negombo</td>
+                        <td><span class="badge badge-teal">Active</span></td>
+                        <td>14</td>
+                        <td>4.8â˜…</td>
+                        <td>â‚¨2,100</td>
+                    </tr>
+                    <tr>
+                        <td>Priya Mendis</td>
+                        <td><span class="badge badge-amber">Agriculture</span></td>
+                        <td>Ja-Ela</td>
+                        <td><span class="badge badge-teal">Active</span></td>
+                        <td>9</td>
+                        <td>4.6â˜…</td>
+                        <td>â‚¨1,350</td>
+                    </tr>
+                    <tr>
+                        <td>Mahesh Jayasinghe</td>
+                        <td><span class="badge badge-blue">Plumbing</span></td>
+                        <td>Wattala</td>
+                        <td><span class="badge badge-amber">On Job</span></td>
+                        <td>22</td>
+                        <td>4.9â˜…</td>
+                        <td>â‚¨3,300</td>
+                    </tr>
+                    <tr>
+                        <td>Chamara Wickrama</td>
+                        <td><span class="badge badge-blue">Driving</span></td>
+                        <td>Negombo</td>
+                        <td><span class="badge badge-coral">Unavailable</span></td>
+                        <td>7</td>
+                        <td>4.3â˜…</td>
+                        <td>â‚¨1,050</td>
+                    </tr>
+                    <tr>
+                        <td>Nandani Silva</td>
+                        <td><span class="badge badge-amber">Cleaning</span></td>
+                        <td>Minuwangoda</td>
+                        <td><span class="badge badge-teal">Active</span></td>
+                        <td>11</td>
+                        <td>4.7â˜…</td>
+                        <td>â‚¨1,650</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="broker-charts-row">
+                <div>
+                    <p class="sec-title">Commission by Skill</p>
+                    <div class="chart-wrap">
+                        <div class="bar-row"><span class="bar-label">Construction</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:80%;background:var(--blue)"></div>
+                            </div>
+                            <span class="bar-val">â‚¨8.2K</span></div>
+                        <div class="bar-row"><span class="bar-label">Plumbing</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:60%;background:var(--teal)"></div>
+                            </div>
+                            <span class="bar-val">â‚¨5.4K</span></div>
+                        <div class="bar-row"><span class="bar-label">Agriculture</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:42%;background:var(--amber)"></div>
+                            </div>
+                            <span class="bar-val">â‚¨3.1K</span></div>
+                        <div class="bar-row"><span class="bar-label">Driving</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:28%;background:var(--purple)"></div>
+                            </div>
+                            <span class="bar-val">â‚¨1.7K</span></div>
+                    </div>
+                </div>
+                <div>
+                    <p class="sec-title">Recent Placements</p>
+                    <div class="chart-wrap" style="font-size:11px;display:flex;flex-direction:column;gap:8px">
+                        <div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--border)">
+                            <span style="color:var(--muted)">Suresh â†’ ABC Construction</span><span
+                                class="badge badge-teal">Done</span></div>
+                        <div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--border)">
+                            <span style="color:var(--muted)">Mahesh â†’ City Plumbers</span><span
+                                class="badge badge-amber">Active</span></div>
+                        <div style="display:flex;justify-content:space-between;padding-bottom:7px;border-bottom:1px solid var(--border)">
+                            <span style="color:var(--muted)">Priya â†’ Perera Farms</span><span
+                                class="badge badge-teal">Done</span></div>
+                        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Chamara â†’ FastCargo LK</span><span
+                                class="badge badge-coral">Dispute</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- â•â• ADMIN â•â• -->
+    <div class="page" id="page-admin">
+        <div class="admin-wrap">
+            <div class="admin-header">
+                <h2>Admin Panel</h2>
+                <div class="gap-row">
+                    <span class="badge badge-teal">System: Normal</span>
+                    <button class="btn btn-secondary btn-sm" onclick="showToast('Refreshed','teal')">Refresh</button>
+                </div>
+            </div>
+            <div class="alert-banner">âš  2 jobs flagged for review Â· 1 payment dispute open</div>
+            <div class="admin-card" id="user-approval-card" style="margin-bottom:14px">
+                <p class="sec-title">User Approvals - Pending</p>
+                <div id="pending-user-list">
+                    <p style="font-size:11px;color:var(--muted)">Login as admin to load pending workers and employers.</p>
+                </div>
+            </div>
+            <div class="admin-grid">
+                <div>
+                    <div class="admin-card" style="margin-bottom:14px">
+                        <p class="sec-title">Broker Applications â€” Pending</p>
+                        <div class="broker-approval-card" id="bac1">
+                            <div class="bac-top">
+                                <div>
+                                    <div class="bac-name">Ranjith Fernando</div>
+                                    <div class="bac-meta">NIC: 8234567890V Â· 1â€“3 years exp Â· 6â€“15 workers</div>
+                                    <div class="bac-city">ðŸ“ Requested: Gampaha District (Negombo, Ja-Ela)</div>
+                                </div>
+                                <span class="badge badge-amber">Pending</span>
+                            </div>
+                            <div class="bac-actions">
+                                <button class="btn btn-sm btn-primary"
+                                        onclick="approveBroker('bac1','Ranjith','Gampaha')">âœ“ Approve
+                                </button>
+                                <button class="btn btn-sm btn-secondary" onclick="rejectBroker('bac1')">Reject</button>
+                            </div>
+                        </div>
+                        <div class="broker-approval-card" id="bac2">
+                            <div class="bac-top">
+                                <div>
+                                    <div class="bac-name">Kumari Bandara</div>
+                                    <div class="bac-meta">NIC: 9034567890V Â· 3â€“5 years exp Â· 6â€“15 workers</div>
+                                    <div class="bac-city">ðŸ“ Requested: Kandy District (Peradeniya area)</div>
+                                </div>
+                                <span class="badge badge-amber">Pending</span>
+                            </div>
+                            <div class="bac-actions">
+                                <button class="btn btn-sm btn-primary" onclick="approveBroker('bac2','Kumari','Kandy')">
+                                    âœ“ Approve
+                                </button>
+                                <button class="btn btn-sm btn-secondary" onclick="rejectBroker('bac2')">Reject</button>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <p class="sec-title">Active Brokers by District</p>
+                        <div style="font-size:11px;display:flex;flex-direction:column;gap:6px">
+                            <div style="display:flex;justify-content:space-between;padding:5px 8px;background:var(--surface2);border-radius:5px">
+                                <span style="color:var(--muted)">Colombo</span><span><strong>14</strong> brokers Â· <span
+                                    style="color:var(--teal)">312 workers</span></span></div>
+                            <div style="display:flex;justify-content:space-between;padding:5px 8px;background:var(--surface2);border-radius:5px">
+                                <span style="color:var(--muted)">Gampaha</span><span><strong>9</strong> brokers Â· <span
+                                    style="color:var(--teal)">187 workers</span></span></div>
+                            <div style="display:flex;justify-content:space-between;padding:5px 8px;background:var(--surface2);border-radius:5px">
+                                <span style="color:var(--muted)">Kandy</span><span><strong>7</strong> brokers Â· <span
+                                    style="color:var(--teal)">143 workers</span></span></div>
+                            <div style="display:flex;justify-content:space-between;padding:5px 8px;background:var(--surface2);border-radius:5px">
+                                <span style="color:var(--muted)">Galle</span><span><strong>5</strong> brokers Â· <span
+                                    style="color:var(--teal)">98 workers</span></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="admin-card" style="margin-bottom:14px">
+                        <div class="flex-between" style="margin-bottom:10px"><p class="sec-title" style="margin:0">
+                            Recent Jobs</p>
+                            <button class="btn btn-secondary btn-sm" onclick="showToast('All jobs loaded','teal')">View
+                                All
+                            </button>
+                        </div>
+                        <div class="jobs-table-wrap">
+                            <table class="jobs-table">
+                                <thead>
+                                <tr>
+                                    <th>Job</th>
+                                    <th>District</th>
+                                    <th>Pay</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Construction x3</td>
+                                    <td>Colombo</td>
+                                    <td>â‚¨7,500</td>
+                                    <td><span class="badge badge-teal">Active</span></td>
+                                    <td>
+                                        <button onclick="showToast('Flagged','coral')"
+                                                style="font-size:10px;padding:2px 7px;background:none;border:1px solid var(--border2);border-radius:4px;color:var(--muted);cursor:pointer">Flag
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Farm Help x5</td>
+                                    <td>Kandy</td>
+                                    <td>â‚¨10,000</td>
+                                    <td><span class="badge badge-teal">Active</span></td>
+                                    <td>
+                                        <button onclick="showToast('Flagged','coral')"
+                                                style="font-size:10px;padding:2px 7px;background:none;border:1px solid var(--border2);border-radius:4px;color:var(--muted);cursor:pointer">Flag
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Driver x1</td>
+                                    <td>Galle</td>
+                                    <td>â‚¨2,800</td>
+                                    <td><span class="badge badge-coral">Disputed</span></td>
+                                    <td>
+                                        <button onclick="showToast('Dispute opened','amber')"
+                                                style="font-size:10px;padding:2px 7px;background:var(--coral);border:none;border-radius:4px;color:#fff;cursor:pointer">Review
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Event Staff x8</td>
+                                    <td>Colombo</td>
+                                    <td>â‚¨20,000</td>
+                                    <td><span class="badge badge-amber">Disputed</span></td>
+                                    <td>
+                                        <button onclick="showToast('Dispute opened','amber')"
+                                                style="font-size:10px;padding:2px 7px;background:var(--coral);border:none;border-radius:4px;color:#fff;cursor:pointer">Review
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="admin-card">
+                        <p class="sec-title">Jobs by District</p>
+                        <div class="district-map">
+                            <div class="district-cell">
+                                <div class="dn">Colombo</div>
+                                <div class="dv">1,240</div>
+                            </div>
+                            <div class="district-cell">
+                                <div class="dn">Gampaha</div>
+                                <div class="dv">834</div>
+                            </div>
+                            <div class="district-cell">
+                                <div class="dn">Kandy</div>
+                                <div class="dv">612</div>
+                            </div>
+                            <div class="district-cell">
+                                <div class="dn">Galle</div>
+                                <div class="dv">441</div>
+                            </div>
+                            <div class="district-cell">
+                                <div class="dn">Kurunegala</div>
+                                <div class="dv">298</div>
+                            </div>
+                            <div class="district-cell">
+                                <div class="dn">Jaffna</div>
+                                <div class="dv">187</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // â”€â”€ DISTRICT â†’ CITY DATA â”€â”€
+        const districtCities = {
+            'Colombo': ['Colombo City', 'Dehiwala', 'Moratuwa', 'Kotte', 'Nugegoda', 'Maharagama', 'Kaduwela', 'Homagama', 'Kesbewa', 'Kolonnawa', 'Ratmalana', 'Boralesgamuwa', 'Hanwella'],
+            'Gampaha': ['Negombo', 'Gampaha', 'Ja-Ela', 'Wattala', 'Minuwangoda', 'Katunayake', 'Kadawatha', 'Veyangoda', 'Mirigama', 'Nittambuwa', 'Ragama', 'Kiribathgoda', 'Ekala'],
+            'Kalutara': ['Kalutara', 'Panadura', 'Horana', 'Beruwala', 'Aluthgama', 'Bandaragama', 'Ingiriya', 'Matugama', 'Wadduwa', 'Payagala'],
+            'Kandy': ['Kandy City', 'Peradeniya', 'Katugastota', 'Gampola', 'Nawalapitiya', 'Teldeniya', 'Kundasale', 'Digana', 'Kadugannawa', 'Pilimathalawa'],
+            'Matale': ['Matale', 'Dambulla', 'Sigiriya', 'Galewela', 'Rattota', 'Ukuwela', 'Pallepola'],
+            'Nuwara Eliya': ['Nuwara Eliya', 'Hatton', 'Talawakelle', 'Ginigathena', 'Ragala', 'Walapane', 'Kotagala'],
+            'Galle': ['Galle', 'Hikkaduwa', 'Ambalangoda', 'Elpitiya', 'Baddegama', 'Karandeniya', 'Bentota', 'Balapitiya', 'Ahangama'],
+            'Matara': ['Matara', 'Weligama', 'Akuressa', 'Devinuwara', 'Hakmana', 'Kamburupitiya', 'Dikwella'],
+            'Hambantota': ['Hambantota', 'Tangalle', 'Tissamaharama', 'Ambalantota', 'Beliatta', 'Weeraketiya', 'Suriyawewa'],
+            'Jaffna': ['Jaffna', 'Chavakachcheri', 'Point Pedro', 'Nallur', 'Manipay', 'Chavakacheri', 'Kopay'],
+            'Kilinochchi': ['Kilinochchi', 'Pallai', 'Paranthan', 'Poonakary'],
+            'Mannar': ['Mannar', 'Nanattan', 'Murunkan', 'Madhu'],
+            'Vavuniya': ['Vavuniya', 'Cheddikulam', 'Nedunkeni', 'Omanthai'],
+            'Mullaitivu': ['Mullaitivu', 'Puthukkudiyiruppu', 'Oddusuddan'],
+            'Batticaloa': ['Batticaloa', 'Kattankudy', 'Valaichhenai', 'Eravur', 'Kalmunai', 'Valaichchenai'],
+            'Ampara': ['Ampara', 'Kalmunai', 'Akkaraipattu', 'Pottuvil', 'Sammanthurai', 'Sainthamaruthu'],
+            'Trincomalee': ['Trincomalee', 'Kinniya', 'Mutur', 'Kantale', 'Thampalakamam'],
+            'Kurunegala': ['Kurunegala', 'Kuliyapitiya', 'Narammala', 'Pannala', 'Giriulla', 'Hettipola', 'Mawathagama', 'Ibbagamuwa'],
+            'Puttalam': ['Puttalam', 'Chilaw', 'Wennappuwa', 'Marawila', 'Dankotuwa', 'Nattandiya', 'Anamaduwa'],
+            'Anuradhapura': ['Anuradhapura', 'Medawachchiya', 'Kekirawa', 'Eppawala', 'Tambuttegama', 'Mihintale', 'Nochchiyagama'],
+            'Polonnaruwa': ['Polonnaruwa', 'Kaduruwela', 'Medirigiriya', 'Hingurakgoda', 'Minneriya'],
+            'Badulla': ['Badulla', 'Bandarawela', 'Welimada', 'Ella', 'Haputale', 'Mahiyanganaya', 'Passara'],
+            'Monaragala': ['Monaragala', 'Wellawaya', 'Bibile', 'Medagama', 'Buttala', 'Kataragama'],
+            'Ratnapura': ['Ratnapura', 'Embilipitiya', 'Balangoda', 'Pelmadulla', 'Eheliyagoda', 'Kuruwita'],
+            'Kegalle': ['Kegalle', 'Mawanella', 'Warakapola', 'Rambukkana', 'Dehiovita', 'Ruwanwella'],
+        };
+
+        function populateDistricts() {
+            const dists = Object.keys(districtCities).sort();
+            ['wr-district', 'er-district', 'br-district', 'pj-dist'].forEach(id => {
+                const sel = document.getElementById(id);
+                if (!sel) return;
+                const first = sel.options[0];
+                sel.innerHTML = '';
+                sel.appendChild(first);
+                dists.forEach(d => {
+                    const o = document.createElement('option');
+                    o.value = d;
+                    o.textContent = d;
+                    sel.appendChild(o);
+                });
+            });
+        }
+
+        function cascadeCity(distId, cityFieldId, cityId) {
+            const dist = document.getElementById(distId).value;
+            const cityField = document.getElementById(cityFieldId);
+            const citySel = document.getElementById(cityId);
+            citySel.innerHTML = '<option value="">Select City...</option>';
+            if (dist && districtCities[dist]) {
+                districtCities[dist].forEach(c => {
+                    const o = document.createElement('option');
+                    o.value = c;
+                    o.textContent = c;
+                    citySel.appendChild(o);
+                });
+                cityField.style.display = 'block';
+            } else {
+                cityField.style.display = 'none';
+            }
+        }
+
+        // â”€â”€ MOBILE NAV â”€â”€
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const ham = document.getElementById('hamburger');
+            const open = menu.classList.toggle('open');
+            ham.classList.toggle('open', open);
+        }
+
+        function mobileGoto(page) {
+            document.getElementById('mobile-menu').classList.remove('open');
+            document.getElementById('hamburger').classList.remove('open');
+            goto(page);
+        }
+
+        // â”€â”€ NAVIGATION â”€â”€
+        function goto(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.mobile-menu .nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            const map = {
+                home: 0,
+                'worker-auth': 1,
+                'employer-auth': 2,
+                'broker-register': 3,
+                'post-job': 4,
+                feed: 5,
+                'broker-dash': 6,
+                admin: 7
+            };
+            if (map[page] !== undefined) {
+                document.querySelectorAll('.nav-tabs .nav-tab')[map[page]].classList.add('active');
+                document.querySelectorAll('.mobile-menu .nav-tab')[map[page]].classList.add('active');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function wtab(t, btn) {
+            document.querySelectorAll('#page-worker-auth .tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('worker-login').style.display = t === 'login' ? 'block' : 'none';
+            document.getElementById('worker-register').style.display = t === 'register' ? 'block' : 'none';
+        }
+
+        function etab(t, btn) {
+            document.querySelectorAll('#page-employer-auth .tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('employer-login').style.display = t === 'login' ? 'block' : 'none';
+            document.getElementById('employer-register').style.display = t === 'register' ? 'block' : 'none';
+        }
+
+        function workerLogin() {
+            showToast('OTP verified! Loading your feed...', 'teal');
+            setTimeout(() => goto('feed'), 1000);
+        }
+
+        function workerRegister() {
+            const n = document.getElementById('wr-name').value;
+            if (!n) {
+                showToast('Please fill required fields', 'coral');
+                return;
+            }
+            document.getElementById('success-worker').style.display = 'block';
+            setTimeout(() => goto('feed'), 1500);
+        }
+
+        function employerLogin() {
+            showToast('Login successful!', 'amber');
+            setTimeout(() => goto('post-job'), 1000);
+        }
+
+        function employerRegister() {
+            const b = document.getElementById('er-biz').value;
+            if (!b) {
+                showToast('Please fill required fields', 'coral');
+                return;
+            }
+            document.getElementById('success-employer').style.display = 'block';
+            setTimeout(() => goto('post-job'), 1500);
+        }
+
+        let brokerStep = 1;
+
+        function bNext(step) {
+            if (step === 2) {
+                const n = document.getElementById('br-name').value;
+                const nic = document.getElementById('br-nic').value;
+                const email = document.getElementById('br-email').value;
+                const password = document.getElementById('br-password').value;
+                if (!n || !nic || !email || !password) {
+                    showToast('Please fill name, NIC, email and password', 'coral');
+                    return;
+                }
+            }
+            if (step === 3) {
+                const d = document.getElementById('br-district').value;
+                if (!d) {
+                    showToast('Please select your district', 'coral');
+                    return;
+                }
+            }
+            brokerStep = step;
+            [1, 2, 3].forEach(i => {
+                document.getElementById('bstep' + i).style.display = i === step ? 'block' : 'none';
+                const bar = document.getElementById('bs' + i);
+                bar.className = 'bstep' + (i < step ? ' done' : i === step ? ' active' : '');
+            });
+        }
+
+        function updateCityBadge() {
+            const d = document.getElementById('br-district').value;
+            const c = document.getElementById('br-city').value;
+            const wrap = document.getElementById('city-badge-wrap');
+            if (d) {
+                const loc = c ? `${c}, ${d} District` : `${d} District`;
+                wrap.innerHTML = `<div class="city-badge">ðŸ“ ${loc} â€” your operational area</div>`;
+            } else {
+                wrap.innerHTML = '';
+            }
+        }
+
+        function brokerSubmit() {
+            if (!document.getElementById('broker-agree').checked) {
+                showToast('Please accept the broker agreement', 'coral');
+                return;
+            }
+            document.getElementById('broker-pending-card').style.display = 'block';
+            showToast('Application submitted! Admin will review within 1â€“2 days.', 'purple');
+            setTimeout(() => {
+                document.getElementById('broker-approved-msg').style.display = 'block';
+                setTimeout(() => goto('broker-dash'), 1500);
+            }, 2500);
+        }
+
+        function toggleAddWorker() {
+            const m = document.getElementById('add-worker-modal');
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function addWorker() {
+            const n = document.getElementById('aw-name').value;
+            const nic = document.getElementById('aw-nic').value;
+            if (!n || !nic) {
+                showToast('Please fill worker name and NIC', 'coral');
+                return;
+            }
+            const tb = document.getElementById('broker-worker-tbody');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${n}</td><td><span class="badge badge-blue">New</span></td><td>Gampaha</td><td><span class="badge badge-blue">Registered</span></td><td>0</td><td>â€”</td><td>â‚¨0</td>`;
+            tb.appendChild(tr);
+            document.getElementById('aw-name').value = '';
+            document.getElementById('aw-nic').value = '';
+            document.getElementById('add-worker-modal').style.display = 'none';
+            showToast(`âœ“ ${n} registered under BRK-0042.`, 'purple');
+        }
+
+        function approveBroker(id, name, city) {
+            const el = document.getElementById(id);
+            el.style.opacity = '.5';
+            el.innerHTML = `<div style="font-size:12px;color:var(--teal);padding:8px">âœ“ ${name} approved â€” assigned to ${city} District. SMS sent with Broker ID.</div>`;
+            showToast(`${name} approved as broker for ${city} District`, 'teal');
+        }
+
+        function rejectBroker(id) {
+            const el = document.getElementById(id);
+            el.style.opacity = '.5';
+            el.innerHTML = `<div style="font-size:12px;color:var(--coral);padding:8px">âœ— Application rejected. Rejection SMS sent.</div>`;
+            showToast('Broker application rejected', 'coral');
+        }
+
+        function updatePreview() {
+            const t = document.getElementById('pj-title').value || 'â€”';
+            const c = document.getElementById('pj-cat').value;
+            const d = document.getElementById('pj-dist').value || 'â€”';
+            const city = document.getElementById('pj-city').value || 'â€”';
+            const cnt = parseInt(document.getElementById('pj-count').value) || 0;
+            const pay = parseInt(document.getElementById('pj-pay').value) || 0;
+            document.getElementById('prev-title').textContent = t;
+            document.getElementById('prev-cat').textContent = c;
+            document.getElementById('prev-dist').textContent = d;
+            document.getElementById('prev-city').textContent = city;
+            document.getElementById('prev-count').textContent = cnt + ' workers';
+            document.getElementById('prev-pay').textContent = cnt && pay ? 'â‚¨' + (cnt * pay).toLocaleString() + ' total' : 'â€”';
+        }
+
+        function submitJob() {
+            const t = document.getElementById('pj-title').value;
+            if (!t) {
+                showToast('Please enter a job title', 'coral');
+                return;
+            }
+            showToast('âœ“ Job posted! Workers being notified via SMS.', 'amber');
+            setTimeout(() => goto('feed'), 1400);
+        }
+
+        // â”€â”€ JOB FEED â”€â”€
+        const jobs = [
+            {
+                id: 1,
+                title: "3 Construction Workers",
+                employer: "Silva Constructions",
+                pay: 2500,
+                category: "Construction",
+                dist: "Colombo",
+                city: "Colombo",
+                date: "2026-05-26",
+                skills: ["Heavy Lifting", "Masonry"],
+                urgent: true,
+                slots: 3
+            },
+            {
+                id: 2,
+                title: "Harvest Helpers x5",
+                employer: "Perera Farms",
+                pay: 1800,
+                category: "Agriculture",
+                dist: "Gampaha",
+                city: "Negombo",
+                date: "2026-05-27",
+                skills: ["No Experience"],
+                urgent: false,
+                slots: 5
+            },
+            {
+                id: 3,
+                title: "Delivery Driver",
+                employer: "FastCargo LK",
+                pay: 3200,
+                category: "Driving",
+                dist: "Colombo",
+                city: "Colombo",
+                date: "2026-05-26",
+                skills: ["Driving License"],
+                urgent: true,
+                slots: 1
+            },
+            {
+                id: 4,
+                title: "Office Deep Cleaning x2",
+                employer: "CleanPro",
+                pay: 2000,
+                category: "Cleaning",
+                dist: "Galle",
+                city: "Galle",
+                date: "2026-05-28",
+                skills: ["Cleaning"],
+                urgent: false,
+                slots: 2
+            },
+            {
+                id: 5,
+                title: "Painting Team x4",
+                employer: "Rainbow Interiors",
+                pay: 2800,
+                category: "Construction",
+                dist: "Kandy",
+                city: "Kandy",
+                date: "2026-05-29",
+                skills: ["Painting"],
+                urgent: false,
+                slots: 4
+            },
+            {
+                id: 6,
+                title: "Event Setup x6",
+                employer: "Golden Events",
+                pay: 2200,
+                category: "Cleaning",
+                dist: "Colombo",
+                city: "Dehiwala",
+                date: "2026-05-26",
+                skills: ["Heavy Lifting"],
+                urgent: true,
+                slots: 6
+            },
+        ];
+        let accepted = {};
+        let catFilter = 'all';
+        let distFilter = 'all';
+
+        function renderFeed() {
+            const list = document.getElementById('job-list');
+            const user = session.user;
+            const workerCity = user?.role === 'WORKER' ? user.city : null;
+            const f = jobs.filter(j => {
+                const cm = catFilter === 'all' || j.category === catFilter || j.category.includes(catFilter);
+                const dm = workerCity ? j.city === workerCity : distFilter === 'all' || j.dist === distFilter;
+                return cm && dm;
+            });
+            if (!f.length) {
+                list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px">No jobs match your filter.</p>';
+                return;
+            }
+            list.innerHTML = f.map(j => `
+    <div class="job-card${accepted[j.id] ? ' accepted' : ''}">
+      <div class="job-top">
+        <div>
+          <div class="job-title">${j.title}</div>
+          <div class="job-emp">${j.employer} Â· ${j.city || j.dist}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="job-pay">â‚¨${j.pay.toLocaleString()}<span>/day</span></div>
+          ${j.urgent ? '<div style="font-size:9px;color:var(--coral);font-weight:700;margin-top:1px">URGENT</div>' : ''}
+        </div>
+      </div>
+      <div class="job-tags">
+        <span class="tag tag-blue">${j.category}</span>
+        <span class="tag tag-amber">${j.city || j.dist}</span>
+        ${j.skills.map(s => `<span class="tag tag-purple">${s}</span>`).join('')}
+      </div>
+      <div class="job-footer">
+        <div class="job-meta">
+          <span><span class="status-dot ${j.slots > 2 ? 'dot-green' : 'dot-amber'}"></span>${j.slots} slot${j.slots > 1 ? 's' : ''}</span>
+          <span>ðŸ“… ${j.date}</span>
+        </div>
+        ${accepted[j.id]
+                ? '<span style="color:var(--teal);font-size:11px;font-weight:700">âœ“ Accepted</span>'
+                : `<button class="btn btn-primary btn-sm" onclick="acceptJob(${j.id})">Accept Job</button>`}
+      </div>
+    </div>
+  `).join('');
+        }
+
+        function acceptJob(id) {
+            accepted[id] = true;
+            renderFeed();
+            showToast('Job accepted! SMS sent to employer.', 'teal');
+        }
+
+        function filterFeed(c) {
+            catFilter = c;
+            renderFeed();
+        }
+
+        function filterDist(el, d) {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('on'));
+            el.classList.add('on');
+            distFilter = d;
+            renderFeed();
+        }
+
+        function toggleSkill(el) {
+            el.classList.toggle('on');
+        }
+
+        function toggleSkillAmber(el) {
+            el.classList.toggle('on');
+            el.style.background = el.classList.contains('on') ? 'var(--amber-bg)' : '';
+            el.style.borderColor = el.classList.contains('on') ? 'var(--amber)' : '';
+            el.style.color = el.classList.contains('on') ? 'var(--amber)' : '';
+        }
+
+        function showToast(msg, type = 'teal') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast toast-${type}`;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        // â”€â”€ INIT â”€â”€
+
+        // REAL AUTH + ROLE GATES
+        const API_BASE = window.location.protocol === 'file:'
+            ? 'http://localhost:9000'
+            : window.location.port === '3000' || window.location.port === ''
+                ? ''
+                : `${window.location.protocol}//${window.location.hostname}:9000`;
+        const session = {
+            get user() {
+                try {
+                    return JSON.parse(localStorage.getItem('lmj_user') || 'null')
+                } catch {
+                    return null
+                }
+            }, set(user) {
+                localStorage.setItem('lmj_user', JSON.stringify(user));
+            }, clear() {
+                localStorage.removeItem('lmj_user');
+            }
+        };
+        const brokerSession = {
+            get broker() {
+                try {
+                    return JSON.parse(localStorage.getItem('lmj_broker') || 'null')
+                } catch {
+                    return null
+                }
+            }, set(broker) {
+                localStorage.setItem('lmj_broker', JSON.stringify(broker));
+            }, clear() {
+                localStorage.removeItem('lmj_broker');
+            }
+        };
+        let adminPanelHtml = null;
+        let brokerDashHtml = null;
+
+        async function apiPost(path, body) {
+            const res = await fetch(API_BASE + path, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        }
+
+        async function apiGet(path) {
+            const res = await fetch(API_BASE + path);
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        }
+
+        async function apiPut(path) {
+            const res = await fetch(API_BASE + path, {method: 'PUT'});
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        }
+
+        function isApproved(user) {
+            return user && String(user.status || '').toUpperCase() === 'APPROVED';
+        }
+
+        const rawGoto = goto;
+        goto = function (page) {
+            const user = session.user;
+            if (page === 'feed' && (!user || user.role !== 'WORKER')) {
+                showToast('Worker Gmail login required before viewing jobs', 'coral');
+                return rawGoto('worker-auth');
+            }
+            if (page === 'feed' && !isApproved(user)) {
+                showToast('Admin approval required before accepting jobs', 'coral');
+                rawGoto('worker-dash');
+                updateWorkerDashboard();
+                return;
+            }
+            if (page === 'post-job' && (!user || user.role !== 'EMPLOYER')) {
+                showToast('Employer Gmail login required to post jobs', 'coral');
+                return rawGoto('employer-auth');
+            }
+            if (page === 'post-job' && !isApproved(user)) {
+                showToast('Admin approval required before posting jobs', 'coral');
+                rawGoto('employer-dash');
+                updateEmployerDashboard();
+                return;
+            }
+            if (page === 'broker-dash' && !brokerSession.broker) {
+                rawGoto('broker-dash');
+                showBrokerLogin();
+                return;
+            }
+            if (page === 'admin' && (!user || user.role !== 'ADMIN')) {
+                rawGoto('admin');
+                showAdminLogin();
+                return;
+            }
+            rawGoto(page);
+            if (page === 'worker-dash') updateWorkerDashboard();
+            if (page === 'employer-dash') updateEmployerDashboard();
+            if (page === 'feed') prepareWorkerFeed();
+            if (page === 'broker-dash') restoreBrokerDashboard();
+            if (page === 'admin') {
+                restoreAdminPanel();
+                renderPendingUsers().catch(() => {});
+            }
+        };
+
+        function restoreAdminPanel() {
+            const wrap = document.querySelector('#page-admin .admin-wrap');
+            if (adminPanelHtml && wrap.innerHTML !== adminPanelHtml) wrap.innerHTML = adminPanelHtml;
+        }
+
+        function showBrokerLogin() {
+            const wrap = document.querySelector('#page-broker-dash .dash-wrap');
+            if (!brokerDashHtml) brokerDashHtml = wrap.innerHTML;
+            wrap.innerHTML = `<div class="auth-wrap" style="min-height:calc(100vh - 120px)"><div class="auth-card"><h2 style="color:var(--purple)">Broker Login</h2><p class="sub">Approved brokers can access the dashboard after admin review.</p><div class="field"><label>Broker Email</label><input type="email" id="broker-login-email" placeholder="broker@email.com"/></div><div class="field"><label>Password</label><input type="password" id="broker-login-password" placeholder="••••••••"/></div><button class="btn btn-purple" style="width:100%" onclick="brokerLogin()">Login to Broker Dashboard</button></div></div>`;
+        }
+
+        function restoreBrokerDashboard() {
+            const wrap = document.querySelector('#page-broker-dash .dash-wrap');
+            if (brokerDashHtml && wrap.innerHTML !== brokerDashHtml) wrap.innerHTML = brokerDashHtml;
+            const broker = brokerSession.broker;
+            if (!broker) return;
+            document.querySelector('#page-broker-dash .dash-header p').innerHTML = `${broker.name} &middot; <span class="mono" style="font-size:11px;color:var(--purple)">${broker.brokerId}</span>`;
+            document.querySelector('#page-broker-dash .city-lock-banner strong').textContent = `City-Locked: ${broker.city || broker.district}`;
+            document.querySelector('#page-broker-dash .city-lock-banner span:last-child').textContent = `You can only register workers and manage jobs within ${broker.city || broker.district}.`;
+        }
+
+        function showAdminLogin() {
+            const wrap = document.querySelector('#page-admin .admin-wrap');
+            if (!adminPanelHtml) adminPanelHtml = wrap.innerHTML;
+            wrap.innerHTML = `<div class="auth-wrap" style="min-height:calc(100vh - 120px)"><div class="auth-card"><h2>Admin Login</h2><p class="sub">Only Gmail/password records from the admins table can access this panel.</p><div class="field"><label>Admin Gmail</label><input type="email" id="admin-email" placeholder="admin@gmail.com"/></div><div class="field"><label>Password</label><input type="password" id="admin-password" placeholder="••••••••"/></div><button class="btn btn-blue" style="width:100%" onclick="adminLogin()">Login to Admin Panel</button></div></div>`;
+        }
+
+        function updateWorkerDashboard() {
+            const user = session.user;
+            if (!user) return;
+            document.getElementById('worker-dash-name').textContent = user.name || 'Worker';
+            document.getElementById('worker-dash-city').textContent = [user.city, user.district].filter(Boolean).join(', ') || 'City pending';
+            document.getElementById('worker-status-kpi').textContent = user.status || 'PENDING';
+            document.getElementById('worker-city-kpi').textContent = user.city || user.district || '-';
+            document.getElementById('worker-approval-title').textContent = isApproved(user) ? 'Approved worker account' : 'Admin approval required';
+            document.getElementById('worker-approval-text').textContent = isApproved(user) ? 'You can accept jobs in your city.' : 'Wait for admin approval before accepting jobs.';
+        }
+
+        function updateEmployerDashboard() {
+            const user = session.user;
+            if (!user) return;
+            document.getElementById('employer-dash-name').textContent = user.name || 'Employer';
+            document.getElementById('employer-dash-city').textContent = [user.city, user.district].filter(Boolean).join(', ') || 'City pending';
+            document.getElementById('employer-status-kpi').textContent = user.status || 'PENDING';
+            document.getElementById('employer-city-kpi').textContent = user.city || user.district || '-';
+            document.getElementById('employer-approval-title').textContent = isApproved(user) ? 'Approved employer account' : 'Admin approval required';
+            document.getElementById('employer-approval-text').textContent = isApproved(user) ? 'You can post jobs now.' : 'Wait for admin approval before posting jobs.';
+        }
+
+        function prepareWorkerFeed() {
+            const user = session.user;
+            const label = [user?.city, user?.district].filter(Boolean).join(', ') || 'Your city';
+            document.querySelector('#page-feed .feed-top p').textContent = `${label} - Approved worker feed`;
+            document.querySelectorAll('#page-feed .filter-row .filter-chip').forEach(chip => {
+                chip.style.display = 'none';
+                chip.classList.remove('on');
+            });
+            distFilter = user?.district || 'all';
+            renderFeed();
+        }
+
+        async function renderPendingUsers() {
+            const list = document.getElementById('pending-user-list');
+            if (!list) return;
+            const users = await apiGet('/auth/users/pending');
+            if (!users.length) {
+                list.innerHTML = '<p style="font-size:11px;color:var(--muted)">No pending workers or employers.</p>';
+                return;
+            }
+                list.innerHTML = users.map(u => `<div class="broker-approval-card" id="user-${u.id}"><div class="bac-top"><div><div class="bac-name">${u.name}</div><div class="bac-meta">${u.role} &middot; ${u.email || u.mobile || ''}</div><div class="bac-city">Requested: ${[u.city, u.district].filter(Boolean).join(', ') || 'No city selected'}</div></div><span class="badge badge-amber">${u.status}</span></div><div class="bac-actions"><button class="btn btn-sm btn-primary" onclick="approveUser(${u.id})">Approve</button><button class="btn btn-sm btn-secondary" onclick="rejectUser(${u.id})">Reject</button></div></div>`).join('');
+        }
+
+        async function approveUser(id) {
+            await apiPut(`/auth/users/${id}/approve`);
+            showToast('User approved', 'teal');
+            renderPendingUsers().catch(() => {});
+        }
+
+        async function rejectUser(id) {
+            await apiPut(`/auth/users/${id}/reject`);
+            showToast('User rejected', 'coral');
+            renderPendingUsers().catch(() => {});
+        }
+
+        async function brokerLogin() {
+            const email = document.getElementById('broker-login-email').value.trim();
+            const password = document.getElementById('broker-login-password').value;
+            if (!email || !password) {
+                showToast('Enter broker email and password', 'coral');
+                return;
+            }
+            try {
+                const data = await apiPost('/brokers/login', {email, password});
+                brokerSession.set(data);
+                showToast('Broker login successful', 'purple');
+                rawGoto('broker-dash');
+                restoreBrokerDashboard();
+            } catch (e) {
+                showToast('Broker not approved or login failed', 'coral');
+            }
+        }
+
+        async function workerLogin() {
+            const email = document.getElementById('wl-email')?.value.trim();
+            const password = document.getElementById('wl-password')?.value;
+            if (!email || !password) {
+                showToast('Enter worker Gmail and password', 'coral');
+                return;
+            }
+            try {
+                const data = await apiPost('/auth/login', {email, password, role: 'WORKER'});
+                session.set({email, id: data.id, role: data.role, name: data.name, token: data.token, status: data.status, district: data.district, city: data.city});
+                showToast('Worker login successful', 'teal');
+                setTimeout(() => goto('worker-dash'), 600);
+            } catch (e) {
+                showToast('Invalid worker Gmail or password', 'coral');
+            }
+        }
+
+        async function workerRegister() {
+            const name = document.getElementById('wr-name').value.trim();
+            const mobile = document.getElementById('wr-phone').value.trim();
+            const email = document.getElementById('wr-email')?.value.trim();
+            const password = document.getElementById('wr-password')?.value;
+            const district = document.getElementById('wr-district')?.value;
+            const city = document.getElementById('wr-city')?.value;
+            if (!name || !email || !password) {
+                showToast('Fill name, Gmail and password', 'coral');
+                return;
+            }
+            try {
+                const data = await apiPost('/auth/register', {name, mobile, email, password, role: 'WORKER', district, city});
+                session.set({email, id: data.id, role: 'WORKER', name, status: data.status, district, city});
+                document.getElementById('success-worker').style.display = 'block';
+                showToast('Worker registered. Waiting for admin approval.', 'teal');
+                setTimeout(() => goto('worker-dash'), 900);
+            } catch (e) {
+                showToast('Worker registration failed', 'coral');
+            }
+        }
+
+        async function employerLogin() {
+            const email = document.getElementById('el-email')?.value.trim();
+            const password = document.getElementById('el-password')?.value;
+            if (!email || !password) {
+                showToast('Enter employer Gmail and password', 'coral');
+                return;
+            }
+            try {
+                const data = await apiPost('/auth/login', {email, password, role: 'EMPLOYER'});
+                session.set({email, id: data.id, role: data.role, name: data.name, token: data.token, status: data.status, district: data.district, city: data.city});
+                showToast('Employer login successful', 'amber');
+                setTimeout(() => goto('employer-dash'), 600);
+            } catch (e) {
+                showToast(e.message ? `Employer login failed: ${e.message}` : 'Employer login failed', 'coral');
+            }
+        }
+
+        async function employerRegister() {
+            const business = document.getElementById('er-biz').value.trim();
+            const name = document.getElementById('er-name').value.trim() || business;
+            const mobile = document.getElementById('er-phone')?.value.trim();
+            const email = document.getElementById('er-email')?.value.trim();
+            const password = document.getElementById('er-password')?.value;
+            const district = document.getElementById('er-district')?.value;
+            const city = document.getElementById('er-city')?.value;
+            if (!business || !email || !password) {
+                showToast('Fill business, Gmail and password', 'coral');
+                return;
+            }
+            try {
+                const data = await apiPost('/auth/register', {name, mobile, email, password, role: 'EMPLOYER', district, city});
+                session.set({email, id: data.id, role: 'EMPLOYER', name, status: data.status, district, city});
+                document.getElementById('success-employer').style.display = 'block';
+                showToast('Employer registered. Waiting for admin approval.', 'amber');
+                setTimeout(() => goto('employer-dash'), 900);
+            } catch (e) {
+                showToast(e.message ? `Employer registration failed: ${e.message}` : 'Employer registration failed', 'coral');
+            }
+        }
+
+        async function adminLogin() {
+            const gmail = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+            if (!gmail || !password) {
+                showToast('Enter admin Gmail and password', 'coral');
+                return;
+            }
+            try {
+                const data = await apiPost('/auth/admin/login', {gmail, password});
+                session.set({email: gmail, role: 'ADMIN', name: data.name, token: data.token});
+                showToast('Admin login successful', 'blue');
+                rawGoto('admin');
+                restoreAdminPanel();
+                renderPendingUsers().catch(() => {});
+            } catch (e) {
+                showToast(e.message ? `Admin login failed: ${e.message}` : 'Admin login failed', 'coral');
+            }
+        }
+
+        brokerSubmit = async function () {
+            if (!document.getElementById('broker-agree').checked) {
+                showToast('Please accept the broker agreement', 'coral');
+                return;
+            }
+            const name = document.getElementById('br-name').value.trim();
+            const nic = document.getElementById('br-nic').value.trim();
+            const phone = document.getElementById('br-phone').value.trim();
+            const email = document.getElementById('br-email').value.trim();
+            const password = document.getElementById('br-password').value;
+            const district = document.getElementById('br-district').value;
+            const city = document.getElementById('br-city').value;
+            const yearsExperience = document.getElementById('br-exp').value;
+            if (!name || !nic || !email || !password || !district) {
+                showToast('Fill broker details, password and district', 'coral');
+                return;
+            }
+            try {
+                await apiPost('/brokers', {name, nic, phone, email, password, district, city, yearsExperience});
+                document.getElementById('broker-pending-card').style.display = 'block';
+                document.getElementById('broker-pending').style.display = 'block';
+                showToast('Application submitted. Admin approval required before login.', 'purple');
+            } catch (e) {
+                showToast('Broker application failed', 'coral');
+            }
+        };
+
+        acceptJob = function (id) {
+            const user = session.user;
+            if (!user || user.role !== 'WORKER') {
+                showToast('Worker Gmail login required before applying', 'coral');
+                return goto('worker-auth');
+            }
+            if (!isApproved(user)) {
+                showToast('Admin approval required before accepting jobs', 'coral');
+                return goto('worker-dash');
+            }
+            accepted[id] = true;
+            renderFeed();
+            apiPost('/notifications', {
+                recipient: user.email,
+                channel: 'EMAIL',
+                type: 'JOB_ACCEPTED',
+                message: 'Your job application was submitted.'
+            }).catch(() => {
+            });
+            showToast('Job applied! Email notification queued.', 'teal');
+        };
+        submitJob = async function () {
+            const user = session.user;
+            if (!user || user.role !== 'EMPLOYER') {
+                showToast('Employer Gmail login required to post jobs', 'coral');
+                return goto('employer-auth');
+            }
+            if (!isApproved(user)) {
+                showToast('Admin approval required before posting jobs', 'coral');
+                return goto('employer-dash');
+            }
+            const title = document.getElementById('pj-title').value.trim();
+            if (!title) {
+                showToast('Please enter a job title', 'coral');
+                return;
+            }
+            await apiPost('/notifications', {gmail: user.email, message: `Job posted: ${title}`}).catch(() => {
+            });
+            showToast('✓ Job posted! Gmail notifications queued.', 'amber');
+            setTimeout(() => goto('feed'), 900);
+        };
+        populateDistricts();
+        renderFeed();
+    </script>
+</html>

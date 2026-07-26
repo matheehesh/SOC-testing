@@ -1,0 +1,38 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: job-service
+  template:
+    metadata:
+      labels:
+        app: job-service
+    spec:
+      containers:
+        - name: job-service
+          image: job-service:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/lanka_microjob
+            - name: SPRING_DATASOURCE_USERNAME
+              value: lanka
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: lanka
+          ports:
+            - containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: job-service
+spec:
+  selector:
+    app: job-service
+  ports:
+    - port: 8082
+      targetPort: 8082

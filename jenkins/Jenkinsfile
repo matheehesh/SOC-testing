@@ -1,0 +1,48 @@
+﻿pipeline {
+  agent any
+  environment {
+    REGISTRY = 'lanka-microjob'
+  }
+  stages {
+    stage('Build Services') {
+      steps {
+        sh '''
+          for d in user-service job-service matching-service broker-service notification-service api-gateway; do
+            echo "Building $d..."
+            (cd $d && mvn -q -DskipTests package)
+          done
+        '''
+      }
+    }
+    stage('Build Frontend') {
+      steps {
+        sh 'cd frontend && npm ci && npm run build'
+      }
+    }
+    stage('Docker Build') {
+      steps {
+        script {
+          ['user-service','job-service','matching-service',
+           'broker-service','notification-service','api-gateway','frontend'].each { svc ->
+            sh "docker build -t ${REGISTRY}/${svc}:latest ./${svc}"
+          }
+        }
+      }
+    }
+    stage('Validate Compose') {
+      steps {
+        sh 'docker compose config'
+      }
+    }
+    stage('Deploy to Kubernetes') {
+      when { branch 'main' }
+      steps {
+        sh 'kubectl apply -f k8s/'
+      }
+    }
+  }
+  post {
+    success { echo 'Lanka MicroJob pipeline succeeded' }
+    failure { echo 'Pipeline failed - check logs above' }
+  }
+}

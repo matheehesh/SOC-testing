@@ -1,0 +1,99 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: lanka_microjob
+      POSTGRES_USER: lanka
+      POSTGRES_PASSWORD: lanka
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U lanka -d lanka_microjob" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  user-service:
+    build: ./user-service
+    environment: &db-env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lanka_microjob
+      SPRING_DATASOURCE_USERNAME: lanka
+      SPRING_DATASOURCE_PASSWORD: lanka
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "9001:9001"
+
+  job-service:
+    build: ./job-service
+    environment:
+      <<: *db-env
+      NOTIFICATION_SERVICE_URL: http://notification-service:9005
+    depends_on:
+      postgres:
+        condition: service_healthy
+      notification-service:
+        condition: service_started
+    ports:
+      - "9002:9002"
+
+  matching-service:
+    build: ./matching-service
+    environment: *db-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "9003:9003"
+
+  broker-service:
+    build: ./broker-service
+    environment:
+      <<: *db-env
+      NOTIFICATION_SERVICE_URL: http://notification-service:9005
+    depends_on:
+      postgres:
+        condition: service_healthy
+      notification-service:
+        condition: service_started
+    ports:
+      - "9004:9004"
+
+  notification-service:
+    build: ./notification-service
+    environment: *db-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "9005:9005"
+
+  api-gateway:
+    build: ./api-gateway
+    environment:
+      USER_SERVICE_URL: http://user-service:9001
+      JOB_SERVICE_URL: http://job-service:9002
+      MATCHING_SERVICE_URL: http://matching-service:9003
+      BROKER_SERVICE_URL: http://broker-service:9004
+      NOTIFICATION_SERVICE_URL: http://notification-service:9005
+    depends_on:
+      - user-service
+      - job-service
+      - matching-service
+      - broker-service
+      - notification-service
+    ports:
+      - "9000:9000"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - api-gateway
+    ports:
+      - "3000:80"
+
+volumes:
+  postgres-data:
