@@ -14,7 +14,7 @@
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -f broker-service/dockerfile -t matheehesh02/microjobs broker-service'
+                bat 'docker build -f broker-service/Dockerfile -t matheehesh02/microjobs broker-service'
             }
         }
 
